@@ -820,6 +820,22 @@ public partial class SqlServerAdapter : ISqlAdapter
     /// <returns>The Id of the row created.</returns>
     public int Insert(IDbConnection connection, IDbTransaction transaction, int? commandTimeout, string tableName, string columnList, string parameterList, IEnumerable<PropertyInfo> keyProperties, object entityToInsert)
     {
+        foreach (var propertyInfo in keyProperties.ToList())
+        {
+            if (propertyInfo.PropertyType == typeof(Guid))
+            {
+                parameterList += $", @{propertyInfo.Name}";
+                columnList += $", [{propertyInfo.Name}]";
+                propertyInfo.SetValue(entityToInsert, Guid.NewGuid());
+            }
+            else if (propertyInfo.PropertyType == typeof(string))
+            {
+                parameterList += $" @{propertyInfo.Name}";
+                columnList += $", [{propertyInfo.Name}]";
+                propertyInfo.SetValue(entityToInsert, Guid.NewGuid().ToString());
+            }
+        }
+        
         var cmd = $"insert into {tableName} ({columnList}) values ({parameterList});select SCOPE_IDENTITY() id";
         var multi = connection.QueryMultiple(cmd, entityToInsert, transaction, commandTimeout);
 
