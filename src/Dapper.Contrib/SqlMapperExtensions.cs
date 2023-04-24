@@ -10,7 +10,7 @@ using System.Threading;
 
 using Dapper;
 
-namespace Dapper.Contrib.Extensions
+namespace ESAbstractions.Dapper.Contrib.Extensions
 {
     /// <summary>
     /// The Dapper.Contrib extensions for Dapper
@@ -827,10 +827,11 @@ public partial class SqlServerAdapter : ISqlAdapter
                 parameterList += $", @{propertyInfo.Name}";
                 columnList += $", [{propertyInfo.Name}]";
                 propertyInfo.SetValue(entityToInsert, Guid.NewGuid());
+               
             }
             else if (propertyInfo.PropertyType == typeof(string))
             {
-                parameterList += $" @{propertyInfo.Name}";
+                parameterList += $", @{propertyInfo.Name}";
                 columnList += $", [{propertyInfo.Name}]";
                 propertyInfo.SetValue(entityToInsert, Guid.NewGuid().ToString());
             }
